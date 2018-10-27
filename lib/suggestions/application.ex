@@ -10,6 +10,8 @@ defmodule Suggestions.Application do
     children = [
       # Start the endpoint when the application starts
       supervisor(SuggestionsWeb.Endpoint, []),
+      supervisor(Suggestions.Query.Supervisor, []), 
+
       # Start your own worker by calling: Suggestions.Worker.start_link(arg1, arg2, arg3)
       # worker(Suggestions.Worker, [arg1, arg2, arg3]),
     ]
