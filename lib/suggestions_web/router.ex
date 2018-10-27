@@ -5,7 +5,8 @@ defmodule SuggestionsWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", SuggestionsWeb do
+  scope "/", SuggestionsWeb do
     pipe_through :api
+    get "/suggestions", SuggestionController, :query
   end
 end
