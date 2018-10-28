@@ -35,7 +35,8 @@ defmodule Suggestions.Mixfile do
       {:phoenix, "~> 1.3.4"},
       {:phoenix_pubsub, "~> 1.0"},
       {:gettext, "~> 0.11"},
-      {:plug_cowboy, "~> 1.0"}
+      {:plug_cowboy, "~> 1.0"},
+      {:csv, "~> 2.1.1"}
     ]
   end
 end

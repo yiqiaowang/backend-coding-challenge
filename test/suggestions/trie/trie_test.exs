@@ -25,6 +25,17 @@ defmodule Suggestions.TrieTest do
         ], value: nil}
     end
 
+    test "a string with spaces", context do
+      assert Trie.insert(Trie.new, "a b", context[:a]) ==
+        %Node{char: :root, children: [
+          %Node{char: "a", children: [
+            %Node{char: " ", children: [
+              %Node{char: "b", children: [], value: context[:a]}
+            ], value: nil}
+          ], value: nil}
+        ], value: nil}
+    end
+
     test "a word with common letter as prefix", context do
       assert Trie.insert(Trie.insert(Trie.new, "a", context[:a]), "ab", context[:ab]) ==
         %Node{char: :root, children: [
