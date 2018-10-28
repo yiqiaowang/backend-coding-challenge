@@ -5,16 +5,18 @@ defmodule Suggestions.WorkerTest do
 
   setup do
     # Start the worker process
-    Worker.start_link
+    Worker.start_link()
 
-    abbotsford = [%Suggestions.Trie.Value{
-      latitude: "49.05798",
-      longitude: "-122.25257",
-      name: "Abbotsford, CA",
-      population: "151683"
-    }]
-    { :ok,
-      abbotsford: abbotsford }
+    abbotsford = [
+      %Suggestions.Trie.Value{
+        latitude: "49.05798",
+        longitude: "-122.25257",
+        name: "Abbotsford, CA",
+        population: "151683"
+      }
+    ]
+
+    {:ok, abbotsford: abbotsford}
   end
 
   describe "suggest appropriate cities" do
@@ -32,6 +34,6 @@ defmodule Suggestions.WorkerTest do
   end
 
   test "do not suggest on nonsense queries" do
-      assert Worker.query("asdfasdfasdf") == []
+    assert Worker.query("asdfasdfasdf") == []
   end
 end

@@ -28,48 +28,44 @@ defmodule Suggestions.Query.Worker do
   def handle_call({:query, querystring}, _from, state) do
     lowercase_qs = String.downcase(querystring)
 
-    Logger.info "Received query for #{lowercase_qs}"
+    Logger.info("Received query for #{lowercase_qs}")
 
     start_time = System.system_time(:millisecond)
-    reply = Levenshtein.search(state.data, lowercase_qs, Suggestions.levenshtein_cost)
+    reply = Levenshtein.search(state.data, lowercase_qs, Suggestions.levenshtein_cost())
     end_time = System.system_time(:millisecond)
 
-    Logger.info "Processed results in #{end_time - start_time} ms"
+    Logger.info("Processed results in #{end_time - start_time} ms")
 
     {:reply, reply, state}
   end
 
   # Private 
   defp construct_trie(data_stream) do
-    Enum.reduce(data_stream, Trie.new,
-      fn x, acc -> 
-        {status, key, value} = format_entry(x)
-        case status do
-          :ok -> Trie.insert(acc, key, value)
-          :error -> acc
-        end
-      end)
+    Enum.reduce(data_stream, Trie.new(), fn x, acc ->
+      {status, key, value} = format_entry(x)
+
+      case status do
+        :ok -> Trie.insert(acc, key, value)
+        :error -> acc
+      end
+    end)
   end
 
   defp format_entry({:ok, data_entry}) do
-    { :ok,
-      String.downcase(Enum.at(data_entry, 1)),
-      Value.from_list(
-        %{ name: 1,
-          latitude: 4,
-          longitude: 5,
-          country: 8,
-          population: 14 }, 
-        data_entry) }
+    {:ok, String.downcase(Enum.at(data_entry, 1)),
+     Value.from_list(
+       %{name: 1, latitude: 4, longitude: 5, country: 8, population: 14},
+       data_entry
+     )}
   end
 
   defp format_entry({:error, msg}) do
-    Logger.error msg
-    { :error , nil, nil }
+    Logger.error(msg)
+    {:error, nil, nil}
   end
 
   defp load_data do
     {:ok, base_dir} = File.cwd()
-    DataLoader.load_data("#{base_dir}/data/#{Suggestions.city_data}", ?\t)
+    DataLoader.load_data("#{base_dir}/data/#{Suggestions.city_data()}", ?\t)
   end
 end

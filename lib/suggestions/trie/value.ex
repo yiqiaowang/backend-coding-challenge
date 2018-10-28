@@ -1,16 +1,15 @@
 defmodule Suggestions.Trie.Value do
-  @moduledoc"""
+  @moduledoc """
   Module providing a struct to hold information regarding
   cities.
 
   Additionally provides a helper function to construct a Value
   struct from a list of data items.
   """
-  defstruct \
-  name: "",
-  latitude: 0.0,
-  longitude: 0.0,
-  population: 0
+  defstruct name: "",
+            latitude: 0.0,
+            longitude: 0.0,
+            population: 0
 
   def from_list(index_map, list) do
     %__MODULE__{
@@ -18,6 +17,6 @@ defmodule Suggestions.Trie.Value do
       latitude: Enum.at(list, index_map.latitude),
       longitude: Enum.at(list, index_map.longitude),
       population: Enum.at(list, index_map.population)
-    } 
+    }
   end
 end

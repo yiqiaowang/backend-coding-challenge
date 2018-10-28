@@ -1,5 +1,8 @@
 defmodule Suggestions.Query.Supervisor do
-  use Supervisor  
+  @moduledoc """
+  Supervisor for the worker genserver.
+  """
+  use Supervisor
 
   def start_link(opts \\ []) do
     Supervisor.start_link(__MODULE__, :ok, opts)
