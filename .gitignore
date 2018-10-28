@@ -1,3 +1,4 @@
 deps/
 *.dump
 _build/
+.elixir_ls/
