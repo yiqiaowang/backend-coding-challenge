@@ -25,12 +25,45 @@ defmodule Suggestions.TrieTest do
         ], value: nil}
     end
 
-    test "a word with common prefix", context do
+    test "a word with common letter as prefix", context do
       assert Trie.insert(Trie.insert(Trie.new, "a", context[:a]), "ab", context[:ab]) ==
         %Node{char: :root, children: [
           %Node{char: "a", children: [
             %Node{char: "b", children: [], value: context[:ab]},
           ], value: context[:a]}
+        ], value: nil}
+    end
+
+    test "a word with common word as prefix", context do
+      assert Trie.insert(Trie.insert(Trie.new, "ab", context[:a]), "abc", context[:ab]) ==
+        %Node{char: :root, children: [
+          %Node{char: "a", children: [
+            %Node{char: "b", children: [
+              %Node{char: "c", children: [], value: context[:ab]},
+            ], value: context[:a]},
+          ], value: nil}
+        ], value: nil}
+    end
+
+    test "two strings with different prefixes", context do
+      assert Trie.insert(Trie.insert(Trie.new, "ab", context[:a]), "xy", context[:ab]) ==
+        %Node{char: :root, children: [
+          %Node{char: "x", children: [
+            %Node{char: "y", children: [], value: context[:ab]}
+          ], value: nil},
+          %Node{char: "a", children: [
+            %Node{char: "b", children: [], value: context[:a]}
+          ], value: nil}
+        ], value: nil}
+    end
+
+    test "two strings with different suffixes", context do
+      assert Trie.insert(Trie.insert(Trie.new, "ab", context[:a]), "ac", context[:ab]) ==
+        %Node{char: :root, children: [
+          %Node{char: "a", children: [
+            %Node{char: "c", children: [], value: context[:ab]},
+            %Node{char: "b", children: [], value: context[:a]}
+          ], value: nil}
         ], value: nil}
     end
   end
@@ -41,11 +74,25 @@ defmodule Suggestions.TrieTest do
     end
 
     test "with valid key terminating at leaf", context do
-      assert Trie.get(Trie.insert(Trie.insert(Trie.new, "a", context[:a]), "ab", context[:ab]), "ab") == context[:ab]
+      assert Trie.get(Trie.insert(Trie.insert(Trie.new, "a", context[:a]), "aab", context[:ab]), "aab") == context[:ab]
     end
 
     test "with invalid key", context do
       assert Trie.get(Trie.insert(Trie.insert(Trie.new, "a", context[:a]), "ab", context[:ab]), "aa") == nil
+    end
+
+    test "with empty key", context do
+      assert Trie.get(Trie.insert(Trie.insert(Trie.new, "a", context[:a]), "ab", context[:ab]), "") == nil
+    end
+
+    test "containing different suffixes", context do
+      assert Trie.get(Trie.insert(Trie.insert(Trie.new, "ab", context[:a]), "ac", context[:ab]), "ab") == context[:a]
+      assert Trie.get(Trie.insert(Trie.insert(Trie.new, "ab", context[:a]), "ac", context[:ab]), "ac") == context[:ab]
+    end
+
+    test "containing different prefixes", context do
+      assert Trie.get(Trie.insert(Trie.insert(Trie.new, "ab", context[:a]), "ac", context[:ab]), "ab") == context[:a]
+      assert Trie.get(Trie.insert(Trie.insert(Trie.new, "xy", context[:a]), "ij", context[:ab]), "ij") == context[:ab]
     end
   end
 end

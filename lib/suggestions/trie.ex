@@ -24,7 +24,7 @@ defmodule Suggestions.Trie do
         # Append new nodes for remaining characters
         case tail do
           "" -> add_child(root, new_node(head, value))
-          _  -> insert(add_child(root, new_node(head)), tail, value)
+          _  -> insert(add_child(root, new_node(head)), string, value)
         end
     end
   end
