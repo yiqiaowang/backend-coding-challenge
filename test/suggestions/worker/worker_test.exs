@@ -12,7 +12,8 @@ defmodule Suggestions.WorkerTest do
         latitude: "49.05798",
         longitude: "-122.25257",
         name: "Abbotsford, CA",
-        population: "151683"
+        population: "151683",
+        score: 0.5
       }
     ]
 

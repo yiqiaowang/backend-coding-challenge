@@ -10,6 +10,7 @@ defmodule Suggestions.Query.Worker do
   alias Suggestions.Trie.Value
   alias Suggestions.Util.DataLoader
   alias Suggestions.Util.Levenshtein
+  alias Suggestions.Util.Scorer
 
   # Client API
   def start_link do
@@ -18,6 +19,10 @@ defmodule Suggestions.Query.Worker do
 
   def query(querystring) do
     GenServer.call(__MODULE__, {:query, querystring})
+  end
+
+  def query(querystring, latitude, longitude) do
+    GenServer.call(__MODULE__, {:query_location, querystring, latitude, longitude})
   end
 
   # Server API
@@ -31,7 +36,28 @@ defmodule Suggestions.Query.Worker do
     Logger.info("Received query for #{lowercase_qs}")
 
     start_time = System.system_time(:millisecond)
-    reply = Levenshtein.search(state.data, lowercase_qs, Suggestions.levenshtein_cost())
+    reply = Scorer.assign_scores(
+      Levenshtein.search(
+        state.data, lowercase_qs, Suggestions.levenshtein_cost()
+      ))
+    end_time = System.system_time(:millisecond)
+
+    Logger.info("Processed results in #{end_time - start_time} ms")
+
+    {:reply, reply, state}
+  end
+
+  def handle_call({:query_location, querystring, latitude, longitude}, _from, state) do
+    lowercase_qs = String.downcase(querystring)
+
+    Logger.info("Received query for #{lowercase_qs} with location [#{latitude}, #{longitude}]")
+
+    start_time = System.system_time(:millisecond)
+    reply = Scorer.assign_scores(
+      Levenshtein.search(
+        state.data, lowercase_qs, Suggestions.levenshtein_cost()
+      ),
+      %{latitude: latitude, longitude: longitude})
     end_time = System.system_time(:millisecond)
 
     Logger.info("Processed results in #{end_time - start_time} ms")
