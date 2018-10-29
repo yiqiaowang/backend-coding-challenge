@@ -16,19 +16,19 @@ defmodule Suggestions.Util.Scorer do
   end
 
   defp score(%Value{} = suggestion) do
-    %{suggestion | score: score_population(suggestion)}
+    %{suggestion | score: score_population(suggestion) + score_prefix(suggestion)}
   end
 
   defp score(%Value{} = suggestion, latitude, longitude) do
     %{
       suggestion
-      | score: score_population(suggestion) + score_prefix(suggestion) +
-        score_dist(suggestion, latitude, longitude)
+      | score: score_population(suggestion) + score_prefix(suggestion) + score_dist(suggestion, latitude, longitude)
     }
   end
 
   # Give fixed score boost to prefix matches
-  defp score_prefix(%Value{is_prefix: is_prefix}) do
+  defp score_prefix(%Value{name: name, is_prefix: is_prefix}) do
+    Logger.debug("#{name} has prefix score #{is_prefix}")
     is_prefix
   end
 

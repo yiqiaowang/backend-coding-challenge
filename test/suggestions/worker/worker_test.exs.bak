@@ -1,0 +1,18 @@
+defmodule Suggestions.WorkerTest do
+  use ExUnit.Case, async: true
+
+  alias Suggestions.Query.Worker
+
+  setup do
+    # Start the worker process
+    Worker.start_link()
+  end
+
+  test "suggested cities should be case independent" do
+    assert Worker.query("abbotsford") == Worker.query("ABBOTSford")
+  end
+
+  test "do not suggest on nonsense queries" do
+    assert Worker.query("asdfasdfasdf") == []
+  end
+end

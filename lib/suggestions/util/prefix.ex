@@ -8,23 +8,28 @@ defmodule Suggestions.Util.Prefix do
   # is such that the levenshtein distance between `kv' and `query'
   # is less than `max_cost'.
   def search(%Node{char: :root} = root, query) do
-    prefix(root, query)
+    Enum.reduce(
+      Enum.map(
+        Enum.filter(root.children, fn x -> x.char == String.at(query, 0) end),
+        fn x -> search_recursive(x, query) end),
+      [],
+      fn x, acc -> x ++ acc end
+    )
   end
 
   # Returns all the nodes that share a common prefix with query
   # returns a tuple with 
-  defp prefix(%Node{} = root, query) do
+  defp search_recursive(%Node{} = root, query) do
     {head, tail} = String.split_at(query, 1)
     cond do
       head == root.char and String.length(tail) == 0 ->
         get_values(root)
       head == root.char ->
         Enum.reduce(
-          Enum.map(root.children, fn x -> prefix(x, tail) end),
+          Enum.map(root.children, fn x -> search_recursive(x, tail) end),
           [],
-          fn x, acc -> x ++ acc end
-        )
-      true -> [] 
+          fn x, acc -> x ++ acc end)
+      true -> get_values(root)
     end
   end
 
