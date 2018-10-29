@@ -33,14 +33,10 @@ defmodule SuggestionsWeb.SuggestionView do
     Enum.map(suggestions, fn x -> format(x) end)
   end
 
-  defp format(
-    %{name: name,
-      score: score,
-      latitude: latitude,
-      longitude: longitude}) do
-        %{name: name,
-          score: score,
-          latitude: latitude,
-          longitude: longitude}
-      end
+  defp format(suggestion) do
+    %{name: suggestion.name,
+      score: suggestion.score,
+      latitude: suggestion.latitude,
+      longitude: suggestion.longitude}
+  end
 end
