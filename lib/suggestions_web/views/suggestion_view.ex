@@ -25,6 +25,6 @@ defmodule SuggestionsWeb.SuggestionView do
   end
 
   defp trim_suggestions(suggestions) do
-    Enum.take_while(suggestions, fn x -> x.score >= 0.75 end)
+    Enum.take_while(suggestions, fn x -> x.score >= 0 end)
   end
 end

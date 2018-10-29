@@ -13,11 +13,6 @@ defmodule Suggestions do
 
   def levenshtein_cost(string) do
     len = String.length(string)
-
-    cond do
-      len < 3 -> 1
-      len < 5 -> 2
-      true -> 3
-    end
+    if len < 5 do 1 else 2 end
   end
 end

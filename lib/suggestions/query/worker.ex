@@ -10,6 +10,7 @@ defmodule Suggestions.Query.Worker do
   alias Suggestions.Trie.Value
   alias Suggestions.Util.DataLoader
   alias Suggestions.Util.Levenshtein
+  alias Suggestions.Util.Prefix
   alias Suggestions.Util.Scorer
 
   # Client API
@@ -36,16 +37,7 @@ defmodule Suggestions.Query.Worker do
     Logger.info("Received query for #{lowercase_qs}")
 
     start_time = System.system_time(:millisecond)
-
-    reply =
-      Scorer.assign_scores(
-        Levenshtein.search(
-          state.data,
-          lowercase_qs,
-          Suggestions.levenshtein_cost(lowercase_qs)
-        )
-      )
-
+    reply = Scorer.assign_scores(get_suggestions(state.data, lowercase_qs))
     end_time = System.system_time(:millisecond)
 
     Logger.info("Processed results in #{end_time - start_time} ms")
@@ -59,17 +51,10 @@ defmodule Suggestions.Query.Worker do
     Logger.info("Received query for #{lowercase_qs} with location [#{latitude}, #{longitude}]")
 
     start_time = System.system_time(:millisecond)
-
-    reply =
-      Scorer.assign_scores(
-        Levenshtein.search(
-          state.data,
-          lowercase_qs,
-          Suggestions.levenshtein_cost(lowercase_qs)
-        ),
-        %{latitude: latitude, longitude: longitude}
-      )
-
+    reply = Scorer.assign_scores(
+      get_suggestions(state.data, lowercase_qs),
+      %{latitude: latitude, longitude: longitude}
+    )
     end_time = System.system_time(:millisecond)
 
     Logger.info("Processed results in #{end_time - start_time} ms")
@@ -78,6 +63,13 @@ defmodule Suggestions.Query.Worker do
   end
 
   # Private 
+  defp get_suggestions(data, query) do
+    Prefix.search(data, query) ++
+      Levenshtein.search(
+        data, query, Suggestions.levenshtein_cost(query)
+      )
+  end
+
   defp construct_trie(data_stream) do
     Enum.reduce(data_stream, Trie.new(), fn x, acc ->
       {status, key, value} = format_entry(x)

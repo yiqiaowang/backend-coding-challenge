@@ -22,8 +22,14 @@ defmodule Suggestions.Util.Scorer do
   defp score(%Value{} = suggestion, latitude, longitude) do
     %{
       suggestion
-      | score: score_population(suggestion) + score_dist(suggestion, latitude, longitude)
+      | score: score_population(suggestion) + score_prefix(suggestion) +
+        score_dist(suggestion, latitude, longitude)
     }
+  end
+
+  # Give fixed score boost to prefix matches
+  defp score_prefix(%Value{is_prefix: is_prefix}) do
+    is_prefix
   end
 
   # Assign a score to the population by binning into groups
@@ -32,9 +38,9 @@ defmodule Suggestions.Util.Scorer do
 
     score =
       cond do
-        population < 50_000 -> 0.1
-        population < 100_000 -> 0.25
-        population < 1_000_000 -> 0.5
+        population < 10_000 -> 0.1
+        population < 100_000 -> 0.4
+        population < 1_000_000 -> 0.8
         true -> 1
       end
 
