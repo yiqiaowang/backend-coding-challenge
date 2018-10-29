@@ -16,7 +16,8 @@ use Mix.Config
 config :suggestions, SuggestionsWeb.Endpoint,
   load_from_system_env: true,
   url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  data: "cities_canada-usa.tsv"
 
 # Do not print debug messages in production
 config :logger, level: :info

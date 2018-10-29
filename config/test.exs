@@ -4,7 +4,8 @@ use Mix.Config
 # you can enable the server option below.
 config :suggestions, SuggestionsWeb.Endpoint,
   http: [port: 4001],
-  server: false
+  server: false,
+  data: "cities_canada-usa_sample.tsv"
 
 # Print only warnings and errors during test
 config :logger, level: :warn

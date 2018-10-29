@@ -5,6 +5,18 @@ defmodule Suggestions.Util.Levenshtein do
   """
   alias Suggestions.Trie.Node
 
+  # Returns all the nodes that share a common prefix with query
+  def prefix(%Node{char: :root} = root, query) do
+    raise "Prefix not implemented"
+    # Enum.reduce(
+    #   Enum.map(root.children, fn child_node ->
+    #     search_recursive(child_node, query, current_row, max_cost)
+    #   end),
+    #   [],
+    #   fn x, acc -> x ++ acc end
+    # )
+  end
+
   # Returns values of keys in a Trie where key value `kv'
   # is such that the levenshtein distance between `kv' and `query'
   # is less than `max_cost'.

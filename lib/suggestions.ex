@@ -7,10 +7,17 @@ defmodule Suggestions do
   if it comes from the database, an external API or others.
   """
   def city_data do
-    "cities_canada-usa_sample.tsv"
+    {_app, config} = List.first(Application.get_all_env(:suggestions))
+    Enum.into(config, %{}).data
   end
 
-  def levenshtein_cost do
-    3
+  def levenshtein_cost(string) do
+    len = String.length(string)
+
+    cond do
+      len < 3 -> 2
+      len < 5 -> 3
+      true -> 5
+    end
   end
 end
