@@ -6,14 +6,12 @@ defmodule SuggestionsWeb.SuggestionView do
   use SuggestionsWeb, :view
 
   def render("index.json", %{suggestions: suggestions}) do
-    %{
-      suggestions:
+    %{suggestions:
         suggestions
         |> sort_suggestions
         |> normalize_scores
         |> trim_suggestions
-        |> format_suggestions
-    }
+        |> format_suggestions}
   end
 
   defp normalize_scores(suggestions) do
