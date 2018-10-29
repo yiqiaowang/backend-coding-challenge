@@ -29,30 +29,38 @@ defmodule Suggestions.Util.Scorer do
   # Assign a score to the population by binning into groups
   defp score_population(%Value{population: population}) do
     population = String.to_integer(population)
-    score = cond do
-      population < 50_000 -> 0.1
-      population < 100_000 -> 0.25
-      population < 1_000_000 -> 0.5
-      true -> 1
-    end
-    Logger.info "scored population #{population} -> #{score}"
+
+    score =
+      cond do
+        population < 50_000 -> 0.1
+        population < 100_000 -> 0.25
+        population < 1_000_000 -> 0.5
+        true -> 1
+      end
+
+    Logger.info("scored population #{population} -> #{score}")
     score
   end
 
   # Assign a score to the distance by binning in to groups
   defp score_dist(%Value{latitude: lat, longitude: long}, target_lat, target_long) do
-    dist = approximate_dist(
-      String.to_float(lat),
-      String.to_float(long),
-      target_lat, target_long
-    )
-    score = cond do
-      dist < 10 -> 1
-      dist < 100 -> 0.5
-      dist < 500 -> 0.25
-      true -> 0.1
-    end
-    Logger.info "scored distance #{dist} -> #{score}"
+    dist =
+      approximate_dist(
+        String.to_float(lat),
+        String.to_float(long),
+        target_lat,
+        target_long
+      )
+
+    score =
+      cond do
+        dist < 10 -> 1
+        dist < 100 -> 0.5
+        dist < 500 -> 0.25
+        true -> 0.1
+      end
+
+    Logger.info("scored distance #{dist} -> #{score}")
     score
   end
 
