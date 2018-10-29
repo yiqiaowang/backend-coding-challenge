@@ -15,9 +15,9 @@ defmodule Suggestions do
     len = String.length(string)
 
     cond do
-      len < 3 -> 2
-      len < 5 -> 3
-      true -> 5
+      len < 3 -> 1
+      len < 5 -> 2
+      true -> 3
     end
   end
 end

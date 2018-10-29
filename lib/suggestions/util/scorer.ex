@@ -38,7 +38,7 @@ defmodule Suggestions.Util.Scorer do
         true -> 1
       end
 
-    Logger.info("scored population #{population} -> #{score}")
+    Logger.debug("scored population #{population} -> #{score}")
     score
   end
 
@@ -60,7 +60,7 @@ defmodule Suggestions.Util.Scorer do
         true -> 0.1
       end
 
-    Logger.info("scored distance #{dist} -> #{score}")
+    Logger.debug("scored distance #{dist} -> #{score}")
     score
   end
 
