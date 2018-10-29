@@ -9,7 +9,8 @@ defmodule Suggestions.Trie.Value do
   defstruct name: "",
             latitude: 0.0,
             longitude: 0.0,
-            population: 0
+            population: 0,
+            score: 0
 
   def from_list(index_map, list) do
     %__MODULE__{
