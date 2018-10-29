@@ -12,6 +12,7 @@ defmodule SuggestionsWeb.SuggestionView do
         |> sort_suggestions
         |> normalize_scores
         |> trim_suggestions
+        |> format_suggestions
     }
   end
 
@@ -27,4 +28,19 @@ defmodule SuggestionsWeb.SuggestionView do
   defp trim_suggestions(suggestions) do
     Enum.take_while(suggestions, fn x -> x.score >= 0 end)
   end
+
+  defp format_suggestions(suggestions) do
+    Enum.map(suggestions, fn x -> format(x) end)
+  end
+
+  defp format(
+    %{name: name,
+      score: score,
+      latitude: latitude,
+      longitude: longitude}) do
+        %{name: name,
+          score: score,
+          latitude: latitude,
+          longitude: longitude}
+      end
 end
