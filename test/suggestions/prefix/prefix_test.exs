@@ -15,7 +15,8 @@ defmodule Suggestions.PrefixTest do
 
   describe "prefix search" do
     test "finds exact match", context do
-      assert Enum.find(Prefix.search(context[:trie], "lima"), fn x -> x.name == "a" end) == %{context[:a] | is_prefix: 1}
+      assert Enum.find(Prefix.search(context[:trie], "lima"), fn x -> x.name == "a" end) ==
+               context[:a]
     end
   end
 end

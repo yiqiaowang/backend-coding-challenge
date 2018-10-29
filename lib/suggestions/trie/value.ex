@@ -7,14 +7,15 @@ defmodule Suggestions.Trie.Value do
   struct from a list of data items.
   """
   defstruct name: "",
+            key: "",
             latitude: 0.0,
             longitude: 0.0,
             population: 0,
-            score: 0,
-            is_prefix: 0
+            score: 0
 
   def from_list(index_map, list) do
     %__MODULE__{
+      key: String.downcase(Enum.at(list, index_map.name)),
       name: "#{Enum.at(list, index_map.name)}, #{Enum.at(list, index_map.country)}",
       latitude: Enum.at(list, index_map.latitude),
       longitude: Enum.at(list, index_map.longitude),

@@ -37,7 +37,13 @@ defmodule Suggestions.Query.Worker do
     Logger.info("Received query for #{lowercase_qs}")
 
     start_time = System.system_time(:millisecond)
-    reply = Scorer.assign_scores(get_suggestions(state.data, lowercase_qs))
+
+    reply =
+      Scorer.assign_scores(
+        lowercase_qs,
+        get_suggestions(state.data, lowercase_qs)
+      )
+
     end_time = System.system_time(:millisecond)
 
     Logger.info("Processed results in #{end_time - start_time} ms")
@@ -51,10 +57,14 @@ defmodule Suggestions.Query.Worker do
     Logger.info("Received query for #{lowercase_qs} with location [#{latitude}, #{longitude}]")
 
     start_time = System.system_time(:millisecond)
-    reply = Scorer.assign_scores(
-      get_suggestions(state.data, lowercase_qs),
-      %{latitude: latitude, longitude: longitude}
-    )
+
+    reply =
+      Scorer.assign_scores(
+        lowercase_qs,
+        get_suggestions(state.data, lowercase_qs),
+        %{latitude: String.to_float(latitude), longitude: String.to_float(longitude)}
+      )
+
     end_time = System.system_time(:millisecond)
 
     Logger.info("Processed results in #{end_time - start_time} ms")
@@ -66,7 +76,9 @@ defmodule Suggestions.Query.Worker do
   defp get_suggestions(data, query) do
     Prefix.search(data, query) ++
       Levenshtein.search(
-        data, query, Suggestions.levenshtein_cost(query)
+        data,
+        query,
+        Suggestions.levenshtein_cost(query)
       )
   end
 

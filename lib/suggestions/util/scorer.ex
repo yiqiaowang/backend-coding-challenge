@@ -5,50 +5,45 @@ defmodule Suggestions.Util.Scorer do
   require Logger
   alias Suggestions.Trie.Value
 
-  def assign_scores(suggestions, opts \\ %{}) do
+  def assign_scores(query, suggestions, opts \\ %{}) do
     case opts do
       %{latitude: lat, longitude: long} ->
-        Enum.map(suggestions, fn x -> score(x, lat, long) end)
+        Enum.map(suggestions, fn x -> score(query, x, lat, long) end)
 
       _ ->
-        Enum.map(suggestions, fn x -> score(x) end)
+        Enum.map(suggestions, fn x -> score(query, x) end)
     end
   end
 
-  defp score(%Value{} = suggestion) do
-    %{suggestion | score: score_population(suggestion) + score_prefix(suggestion)}
+  defp score(query, %Value{} = suggestion) do
+    %{suggestion | score: score_jaro(query, suggestion) + score_population(suggestion)}
   end
 
-  defp score(%Value{} = suggestion, latitude, longitude) do
+  defp score(query, %Value{} = suggestion, latitude, longitude) do
     %{
       suggestion
-      | score: score_population(suggestion) + score_prefix(suggestion) + score_dist(suggestion, latitude, longitude)
+      | score:
+          score_jaro(query, suggestion) + score_population(suggestion) +
+            score_dist(suggestion, latitude, longitude)
     }
   end
 
-  # Give fixed score boost to prefix matches
-  defp score_prefix(%Value{name: name, is_prefix: is_prefix}) do
-    Logger.debug("#{name} has prefix score #{is_prefix}")
-    is_prefix
-  end
-
-  # Assign a score to the population by binning into groups
+  # Gives a fixed bias to populous cities
   defp score_population(%Value{population: population}) do
     population = String.to_integer(population)
 
     score =
-      cond do
-        population < 10_000 -> 0.1
-        population < 100_000 -> 0.4
-        population < 1_000_000 -> 0.8
-        true -> 1
+      if population > 100_000 do
+        0.3
+      else
+        0
       end
 
     Logger.debug("scored population #{population} -> #{score}")
     score
   end
 
-  # Assign a score to the distance by binning in to groups
+  # Gives a fixed bias to nearby cities
   defp score_dist(%Value{latitude: lat, longitude: long}, target_lat, target_long) do
     dist =
       approximate_dist(
@@ -59,19 +54,25 @@ defmodule Suggestions.Util.Scorer do
       )
 
     score =
-      cond do
-        dist < 10 -> 1
-        dist < 100 -> 0.5
-        dist < 500 -> 0.25
-        true -> 0.1
+      if dist < 100 do
+        0.3
+      else
+        0
       end
 
     Logger.debug("scored distance #{dist} -> #{score}")
     score
   end
 
-  # Approximate distnace between coordinates
-  defp approximate_dist(p, q, x, y) do
+  # Get the jaro-winkler distance
+  defp score_jaro(query, suggestion) do
+    score = String.jaro_distance(query, suggestion.name)
+    Logger.debug("scored Jaro-Winkler #{suggestion.name} -> #{score}")
+    score
+  end
+
+  # Approximate distnace in KM between coordinates
+  def approximate_dist(p, q, x, y) do
     # Distance in KM per degree at equator
     length_at_equator = 110.25
     a = p - x
