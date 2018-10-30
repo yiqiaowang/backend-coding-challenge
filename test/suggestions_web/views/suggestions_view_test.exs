@@ -12,7 +12,7 @@ defmodule SuggestionsWeb.SuggestionsViewTest do
         longitude: "-111.83439",
         name: "Logan, US",
         population: "48174",
-        score: 0.5185185185185185
+        score: 2.5185185185185185
       },
       %Suggestions.Trie.Value{
         key: "logansport",
@@ -20,7 +20,7 @@ defmodule SuggestionsWeb.SuggestionsViewTest do
         longitude: "-86.35667",
         name: "Logansport, US",
         population: "18396",
-        score: 0.5714285714285715
+        score: 2.5714285714285715
       },
       %Suggestions.Trie.Value{
         key: "loganville",
@@ -28,7 +28,7 @@ defmodule SuggestionsWeb.SuggestionsViewTest do
         longitude: "-83.90074",
         name: "Loganville, US",
         population: "10458",
-        score: 0.4920634920634921
+        score: 1.4920634920634921
       }
     ]
 
