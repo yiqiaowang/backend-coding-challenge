@@ -25,7 +25,7 @@ defmodule Suggestions.ScorerTest do
       assert Scorer.assign_scores(
                context[:query],
                context[:suggestions]
-             ) == Enum.map(context[:suggestions], fn x -> %{x | score: 1.2047619047619047} end)
+             ) == Enum.map(context[:suggestions], fn x -> %{x | score: 1.130952380952381} end)
     end
 
     test "with location parameters", context do
@@ -33,7 +33,7 @@ defmodule Suggestions.ScorerTest do
                context[:query],
                context[:suggestions],
                context[:location]
-             ) == Enum.map(context[:suggestions], fn x -> %{x | score: 1.2047619047619047} end)
+             ) == Enum.map(context[:suggestions], fn x -> %{x | score: 1.244047619047619} end)
     end
   end
 
