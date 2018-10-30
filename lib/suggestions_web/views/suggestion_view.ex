@@ -10,8 +10,9 @@ defmodule SuggestionsWeb.SuggestionView do
       suggestions:
         suggestions
         |> sort_suggestions
-        |> normalize_scores
         |> trim_suggestions
+        |> normalize_scores
+        |> filter_suggestions
         |> format_suggestions
         |> remove_duplicates
     }
@@ -26,8 +27,12 @@ defmodule SuggestionsWeb.SuggestionView do
     Enum.sort_by(suggestions, fn x -> x.score end, &>=/2)
   end
 
-  defp trim_suggestions(suggestions) do
+  defp filter_suggestions(suggestions) do
     Enum.take_while(suggestions, fn x -> x.score >= 0.9 end)
+  end
+
+  defp trim_suggestions(suggestions) do
+    Enum.take(suggestions, max(trunc(Enum.count(suggestions) * 0.2), 5))
   end
 
   defp format_suggestions(suggestions) do
@@ -44,6 +49,6 @@ defmodule SuggestionsWeb.SuggestionView do
   end
 
   defp remove_duplicates(suggestions) do
-    Enum.uniq(suggestions, fn x -> x.name end)
+    Enum.uniq_by(suggestions, fn x -> x.name end)
   end
 end

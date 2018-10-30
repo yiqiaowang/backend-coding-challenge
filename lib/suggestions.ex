@@ -10,14 +10,4 @@ defmodule Suggestions do
     {_app, config} = List.first(Application.get_all_env(:suggestions))
     Enum.into(config, %{}).data
   end
-
-  def levenshtein_cost(string) do
-    len = String.length(string)
-
-    if len < 5 do
-      1
-    else
-      2
-    end
-  end
 end

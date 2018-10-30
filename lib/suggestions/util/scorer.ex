@@ -51,10 +51,10 @@ defmodule Suggestions.Util.Scorer do
         target_long
       )
 
-    if dist < 100 do
-      1.25
-    else
-      1
+    cond do
+      dist < 50 -> 1.25
+      dist < 250 -> 1.1
+      true -> 1
     end
   end
 

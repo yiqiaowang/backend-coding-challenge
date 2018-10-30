@@ -78,7 +78,7 @@ defmodule Suggestions.Query.Worker do
       Levenshtein.search(
         data,
         query,
-        Suggestions.levenshtein_cost(query)
+        levenshtein_cost(query)
       )
   end
 
@@ -109,5 +109,13 @@ defmodule Suggestions.Query.Worker do
   defp load_data do
     {:ok, base_dir} = File.cwd()
     DataLoader.load_data("#{base_dir}/data/#{Suggestions.city_data()}", ?\t)
+  end
+
+  def levenshtein_cost(string) do
+    if String.length(string) < 5 do
+      1
+    else
+      2
+    end
   end
 end
