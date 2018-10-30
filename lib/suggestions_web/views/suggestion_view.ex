@@ -11,23 +11,32 @@ defmodule SuggestionsWeb.SuggestionView do
         suggestions
         |> sort_suggestions
         |> trim_suggestions
+        |> prefilter_suggestions
         |> normalize_scores
-        |> filter_suggestions
+        |> postfilter_suggestions
         |> format_suggestions
         |> remove_duplicates
     }
   end
 
-  defp normalize_scores(suggestions) do
+  defp normalize_scores([_ | _] = suggestions) do
     max_score = Enum.max(Enum.map(suggestions, fn x -> x.score end))
     Enum.map(suggestions, fn x -> %{x | score: x.score / max_score} end)
+  end
+
+  defp normalize_scores(_) do
+    []
   end
 
   defp sort_suggestions(suggestions) do
     Enum.sort_by(suggestions, fn x -> x.score end, &>=/2)
   end
 
-  defp filter_suggestions(suggestions) do
+  defp prefilter_suggestions(suggestions) do
+    Enum.take_while(suggestions, fn x -> x.score >= 0.7 end)
+  end
+
+  defp postfilter_suggestions(suggestions) do
     Enum.take_while(suggestions, fn x -> x.score >= 0.9 end)
   end
 
