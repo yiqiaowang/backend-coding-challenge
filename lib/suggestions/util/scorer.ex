@@ -16,35 +16,33 @@ defmodule Suggestions.Util.Scorer do
   end
 
   defp score(query, %Value{} = suggestion) do
-    %{suggestion | score: score_jaro(query, suggestion) + score_population(suggestion)}
+    score = score_jaro(query, suggestion) * pop_factor(suggestion)
+    Logger.info("gave #{suggestion.name} score = #{score}")
+    %{suggestion | score: score}
   end
 
   defp score(query, %Value{} = suggestion, latitude, longitude) do
-    %{
-      suggestion
-      | score:
-          score_jaro(query, suggestion) + score_population(suggestion) +
-            score_dist(suggestion, latitude, longitude)
-    }
+    score =
+      score_jaro(query, suggestion) * pop_factor(suggestion) *
+        dist_factor(suggestion, latitude, longitude)
+
+    Logger.info("gave #{suggestion.name} score = #{score}")
+    %{suggestion | score: score}
   end
 
   # Gives a fixed bias to populous cities
-  defp score_population(%Value{population: population}) do
+  defp pop_factor(%Value{population: population}) do
     population = String.to_integer(population)
 
-    score =
-      if population > 100_000 do
-        0.3
-      else
-        0
-      end
-
-    Logger.debug("scored population #{population} -> #{score}")
-    score
+    if population > 100_000 do
+      1.25
+    else
+      1
+    end
   end
 
   # Gives a fixed bias to nearby cities
-  defp score_dist(%Value{latitude: lat, longitude: long}, target_lat, target_long) do
+  defp dist_factor(%Value{latitude: lat, longitude: long}, target_lat, target_long) do
     dist =
       approximate_dist(
         String.to_float(lat),
@@ -53,22 +51,16 @@ defmodule Suggestions.Util.Scorer do
         target_long
       )
 
-    score =
-      if dist < 100 do
-        0.3
-      else
-        0
-      end
-
-    Logger.debug("scored distance #{dist} -> #{score}")
-    score
+    if dist < 100 do
+      1.25
+    else
+      1
+    end
   end
 
   # Get the jaro-winkler distance
   defp score_jaro(query, suggestion) do
-    score = String.jaro_distance(query, suggestion.name)
-    Logger.debug("scored Jaro-Winkler #{suggestion.name} -> #{score}")
-    score
+    String.jaro_distance(query, suggestion.name)
   end
 
   # Approximate distnace in KM between coordinates

@@ -6,12 +6,15 @@ defmodule SuggestionsWeb.SuggestionView do
   use SuggestionsWeb, :view
 
   def render("index.json", %{suggestions: suggestions}) do
-    %{suggestions:
+    %{
+      suggestions:
         suggestions
         |> sort_suggestions
         |> normalize_scores
         |> trim_suggestions
-        |> format_suggestions}
+        |> format_suggestions
+        |> remove_duplicates
+    }
   end
 
   defp normalize_scores(suggestions) do
@@ -24,7 +27,7 @@ defmodule SuggestionsWeb.SuggestionView do
   end
 
   defp trim_suggestions(suggestions) do
-    Enum.take_while(suggestions, fn x -> x.score >= 0 end)
+    Enum.take_while(suggestions, fn x -> x.score >= 0.9 end)
   end
 
   defp format_suggestions(suggestions) do
@@ -32,9 +35,15 @@ defmodule SuggestionsWeb.SuggestionView do
   end
 
   defp format(suggestion) do
-    %{name: suggestion.name,
+    %{
+      name: suggestion.name,
       score: suggestion.score,
       latitude: suggestion.latitude,
-      longitude: suggestion.longitude}
+      longitude: suggestion.longitude
+    }
+  end
+
+  defp remove_duplicates(suggestions) do
+    Enum.uniq(suggestions, fn x -> x.name end)
   end
 end
