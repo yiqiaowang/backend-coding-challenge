@@ -10,6 +10,7 @@ Elixir and Phoenix were chosen as this was a great opportunity to experiment wit
  - Upon a query, suggestion candidates are collected via prefix matching and fuzzy matching (by levenshtein automata)
  - Suggestion candidates are then given a score taking into consideration its Jaro-Winklar distance from the query, its population size, and, if provided, its location information. More populous cities are scored higher. Likewise, cities that are closer to the provided location (estimated via longitude and latitude) are given a higher score.
  - The best scoring cities among the candidates are suggested
+ - Remark: the scoring cutoffs are fairly pessimistic i.e. they try to reduce the amount of type 1 errors
 
 ### Example
 ```
